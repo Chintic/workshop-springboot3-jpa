@@ -13,6 +13,8 @@ import com.estudos.course.repositories.UserRepository;
 import com.estudos.course.services.exceptions.DatabaseException;
 import com.estudos.course.services.exceptions.ResourceNotFoundException;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
 public class UserService {
 	
@@ -37,19 +39,24 @@ public class UserService {
 	}
 	
 	public void delete(Long id) {
-		try {
-			repository.deleteById(id);
-		} catch(EmptyResultDataAccessException e) {
-			throw new ResourceNotFoundException(id);
-		} catch(DataIntegrityViolationException e) {
-			throw new DatabaseException(e.getMessage());
-		}
+	    try {
+	        repository.deleteById(id);
+	    // EmptyResultDataAccessException parece não estar sendo disparado como erro, consequentemente não está sendo tratado. 
+	    } catch (EmptyResultDataAccessException e) {
+	    	throw new ResourceNotFoundException(id);
+	    } catch (DataIntegrityViolationException e) {
+	        throw new DatabaseException(e.getMessage());
+	    }
 	}
 	
 	public User update(Long id, User obj) {
-		User entity = repository.getReferenceById(id);
-		updateData(entity, obj);
-		return repository.save(entity);
+		try{
+			User entity = repository.getReferenceById(id);
+			updateData(entity, obj);
+			return repository.save(entity);
+		} catch (EntityNotFoundException e) {
+	    	throw new ResourceNotFoundException(id);
+		}
 	}
 
 	private void updateData(User entity, User obj) {
