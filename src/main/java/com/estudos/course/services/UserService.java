@@ -41,7 +41,7 @@ public class UserService {
 	public void delete(Long id) {
 	    try {
 	        repository.deleteById(id);
-	    // EmptyResultDataAccessException parece não estar sendo disparado como erro, consequentemente não está sendo tratado. 
+	    // EmptyResultDataAccessException parece não estar sendo disparado, consequentemente não está sendo tratado. 
 	    } catch (EmptyResultDataAccessException e) {
 	    	throw new ResourceNotFoundException(id);
 	    } catch (DataIntegrityViolationException e) {
